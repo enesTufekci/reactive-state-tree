@@ -10,10 +10,15 @@ State management is hard, especially if a state effects multiple components whic
 
 ### Installation
 
-> \$ npm install reactive-state-tree
-> or
+```
+npm install reactive-state-tree
+```
 
-> \$ yarn add reactive-state-tree
+or
+
+```
+yarn add reactive-state-tree
+```
 
 ### Usage
 
