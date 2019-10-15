@@ -10,13 +10,13 @@ export const App: React.FC = () => {
     query: '',
     subState: {
       subCount: 0,
-      subQuery: '',
+      subQuery: '1234',
     },
   };
   return (
-    <AppStateProvider initialState={initialState}>
+    <AppStateProvider>
       <AppStateComponents />
-      <SubStateProvider initialState={initialState.subState}>
+      <SubStateProvider>
         <SubStateComponents />
       </SubStateProvider>
     </AppStateProvider>

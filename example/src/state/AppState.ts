@@ -16,7 +16,14 @@ const [
   AppStateProvider,
   useAppStateRoot,
   useAppStateSelect,
-] = createReactiveContext<AppState>(null as any);
+] = createReactiveContext<AppState>({
+  count: 0,
+  query: '',
+  subState: {
+    subCount: 0,
+    subQuery: '1234',
+  },
+});
 
 export {
   AppStateContext,

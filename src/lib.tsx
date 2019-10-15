@@ -2,14 +2,16 @@ import * as React from 'react';
 import { StateTree, createStateTree } from './StateTree';
 import { createSelectStateHook, createRootStateHook } from './helpers';
 
-export function createReactiveContext<T extends {}>(initialState: T) {
+export function createReactiveContext<T extends {}>(defaultState: T) {
   const Context = React.createContext<StateTree<T>>(null as any);
 
-  const Provider: React.FC<{ initialState: T }> = ({
+  const Provider: React.FC<{ initialState?: T }> = ({
     children,
-    initialState: initial,
+    initialState = {},
   }) => {
-    const value = React.useRef(createStateTree(initial || initialState));
+    const value = React.useRef(
+      createStateTree({ ...defaultState, ...initialState })
+    );
     return (
       <Context.Provider value={value.current}>{children}</Context.Provider>
     );
@@ -32,14 +34,14 @@ export function createSubTree<T, K extends keyof T>(
 ) {
   const InnerContext = React.createContext<StateTree<T[K]>>(null as any);
 
-  const Provider: React.FC<{ initialState: T[K] }> = ({
-    initialState,
+  const Provider: React.FC<{ initialState?: T[K] }> = ({
+    initialState = {},
     children,
   }) => {
     const rootStateTree = React.useContext(Context);
 
     const stateTree = React.useRef(
-      createStateTree(rootStateTree.getValue()[key] || initialState)
+      createStateTree({ ...rootStateTree.getValue()[key], ...initialState })
     );
 
     React.useEffect(() => {
