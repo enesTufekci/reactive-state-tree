@@ -8,10 +8,12 @@ export const Root: React.FC = () => {
   const handleReset = () => {
     setRootState(initialState.current);
   };
+  console.log('render sub root');
   return (
     <div>
-      <h1>Root state</h1>
+      <h1>Sub Root state</h1>
       <pre>{JSON.stringify(rootState)}</pre>
+      <button onClick={handleReset}>Reset</button>
     </div>
   );
 };

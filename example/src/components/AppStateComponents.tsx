@@ -8,10 +8,12 @@ export const Root: React.FC = () => {
   const handleReset = () => {
     setRootState(initialState.current);
   };
+
   return (
     <div>
       <h1>Root state</h1>
       <pre>{JSON.stringify(rootState)}</pre>
+      <button onClick={handleReset}>Reset</button>
     </div>
   );
 };
