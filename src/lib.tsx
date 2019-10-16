@@ -3,7 +3,7 @@ import * as React from 'react';
 import { StateTree, createStateTree } from './StateTree';
 import { createStateManager, UseSelectState } from './helpers';
 
-interface StateBranchI<T, K extends keyof T> {
+export interface StateBranchI<T, K extends keyof T> {
   Provider: React.FC<{ initialState?: T[K] }>;
   useSelectState: UseSelectState<T[K]>;
   useRootState: (
@@ -17,7 +17,7 @@ interface StateBranchI<T, K extends keyof T> {
   createBranch: <L extends keyof T[K]>(key: L) => StateBranchI<T[K], L>;
 }
 
-interface StateTreeI<T> {
+export interface StateTreeI<T> {
   Provider: React.FC<{ initialState?: T }>;
   useSelectState: UseSelectState<T>;
   useRootState: (
