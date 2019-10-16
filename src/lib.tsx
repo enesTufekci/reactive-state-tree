@@ -14,7 +14,7 @@ export interface StateBranchI<T, K extends keyof T> {
     condition: ((key: T[K][L] | null) => boolean) | undefined,
     cb: VoidFunction
   ) => void;
-  update: (nextState: T[K]) => void;
+  useUpdate: () => (nextState: T[K]) => void;
   createBranch: <L extends keyof T[K]>(key: L) => StateBranchI<T[K], L>;
 }
 
@@ -29,7 +29,7 @@ export interface StateTreeI<T> {
     condition: ((key: T[K] | null) => boolean) | undefined,
     cb: VoidFunction
   ) => void;
-  update: (nextState: T) => void;
+  useUpdate: () => (nextState: T) => void;
   createBranch: <K extends keyof T>(key: K) => StateBranchI<T, K>;
 }
 
@@ -56,7 +56,7 @@ export const createBranch = <
       const subscription = stateTree.current.subscribe(nextState => {
         rootStateTree.next({ ...rootStateTree.getValue(), [key]: nextState });
       });
-      // TODO: check circular update causing problems
+      // TODO: check circular useUpdate causing problems
       const rootSubscription = rootStateTree.subscribe(nextState => {
         stateTree.current.next(nextState[key]);
       });

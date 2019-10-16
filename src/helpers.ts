@@ -107,7 +107,7 @@ const createUseOnChange = <T>(Context: React.Context<StateTree<T>>) => {
   };
 };
 
-const createForceUpdate = <T>(Context: React.Context<StateTree<T>>) => {
+const createUseUpdate = <T>(Context: React.Context<StateTree<T>>) => {
   return () => {
     const subject = React.useContext(Context);
 
@@ -122,13 +122,13 @@ export function createStateManager<T>(
   const useSelectState = createSelectStateHook(Context);
   const useRootState = createRootStateHook(Context);
   const useOnChange = createUseOnChange(Context);
-  const update = createForceUpdate(Context);
+  const useUpdate = createUseUpdate(Context);
 
   return {
     Provider,
     useSelectState,
     useRootState,
     useOnChange,
-    update,
+    useUpdate,
   };
 }
