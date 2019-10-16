@@ -1,16 +1,3 @@
-import { createSubTree } from '../../../.';
-import { AppStateContext } from './AppState';
+import { AppState } from './AppState';
 
-const [
-  SubStateContext,
-  SubStateProvider,
-  useSubStateRoot,
-  useSubStateSelect,
-] = createSubTree(AppStateContext, 'subState');
-
-export {
-  SubStateContext,
-  SubStateProvider,
-  useSubStateRoot,
-  useSubStateSelect,
-};
+export const SubState = AppState.createBranch('subState');

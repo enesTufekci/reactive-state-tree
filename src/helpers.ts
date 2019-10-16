@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { StateTree } from './StateTree';
 
-type UseSelectState<T> = <K extends keyof T>(
+export type UseSelectState<T> = <K extends keyof T>(
   path: K,
   condition?: (p: T[K]) => boolean
 ) => [T[K] | null, (n: T[K] | ((n: T[K]) => T[K])) => void];
 
 type Updater<T> = T | ((state: T) => T);
 
-export const createSelectStateHook = <T>(
-  Context: React.Context<StateTree<T>>
-) => {
+export function createSelectStateHook<T>(Context: React.Context<StateTree<T>>) {
   const useSelectState: UseSelectState<T> = (path, condition = () => true) => {
     const root = React.useContext(Context);
 
@@ -49,13 +47,11 @@ export const createSelectStateHook = <T>(
   };
 
   return useSelectState;
-};
+}
 
-export const createRootStateHook = <T>(
-  Context: React.Context<StateTree<T>>
-) => {
+export function createRootStateHook<T>(Context: React.Context<StateTree<T>>) {
   const useRootState = (
-    filter: (state: T) => boolean = () => true
+    condition: (state: T) => boolean = () => true
   ): [T | null, (n: T) => void] => {
     const root = React.useContext(Context);
 
@@ -63,14 +59,14 @@ export const createRootStateHook = <T>(
 
     React.useEffect(() => {
       const subscription = root.subscribe(nextState => {
-        if (filter(nextState)) {
+        if (condition(nextState)) {
           setState(nextState);
         }
       });
       return () => {
         subscription.unsubscribe();
       };
-    }, [filter, root]);
+    }, [condition, root]);
 
     const update = (updater: Updater<T>) => {
       if (typeof updater === 'function') {
@@ -84,4 +80,45 @@ export const createRootStateHook = <T>(
   };
 
   return useRootState;
+}
+
+type StateProvider<T> = React.FC<{
+  initialState?: T;
+}>;
+
+const createUseOnChange = <T>(Context: React.Context<StateTree<T>>) => {
+  return <K extends keyof T>(
+    key: K,
+    condition: (key: T[K] | null) => boolean = () => true,
+    cb: VoidFunction
+  ) => {
+    const subject = React.useContext(Context);
+
+    React.useEffect(() => {
+      const sub = subject.subscribe(nextValue => {
+        if (condition(nextValue[key])) {
+          cb();
+        }
+      });
+      return () => {
+        sub.unsubscribe();
+      };
+    }, [cb, condition, key, subject]);
+  };
 };
+
+export function createStateManager<T>(
+  Context: React.Context<StateTree<T>>,
+  Provider: StateProvider<T>
+) {
+  const useSelectState = createSelectStateHook(Context);
+  const useRootState = createRootStateHook(Context);
+  const useOnChange = createUseOnChange(Context);
+
+  return {
+    Provider,
+    useSelectState,
+    useRootState,
+    useOnChange,
+  };
+}

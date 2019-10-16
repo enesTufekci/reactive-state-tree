@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useAppStateRoot, useAppStateSelect } from '../state/AppState';
+import { AppState } from '../state/AppState';
 
 export const Root: React.FC = () => {
-  const [rootState, setRootState] = useAppStateRoot();
+  const [rootState, setRootState] = AppState.useRootState();
   const initialState = React.useRef(rootState!);
 
   const handleReset = () => {
@@ -19,7 +19,7 @@ export const Root: React.FC = () => {
 };
 
 export const Counter: React.FC = () => {
-  const [count, setCount] = useAppStateSelect('count');
+  const [count, setCount] = AppState.useSelectState('count');
   const handleIncrement = () => {
     setCount(count => count + 1);
   };
@@ -35,7 +35,7 @@ export const Counter: React.FC = () => {
 };
 
 export const Input: React.FC = () => {
-  const [query, setQuery] = useAppStateSelect('query');
+  const [query, setQuery] = AppState.useSelectState('query');
   const handleUpdateQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setQuery(value);
@@ -48,7 +48,7 @@ export const Input: React.FC = () => {
 };
 
 export const SubState: React.FC = () => {
-  const [substate] = useAppStateSelect('subState');
+  const [substate] = AppState.useSelectState('subState');
   return (
     <div>
       <pre>{JSON.stringify(substate)}</pre>

@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { AppStateProvider, AppState } from './state/AppState';
-import { SubStateProvider } from './state/Substate';
+import { AppState } from './state/AppState';
+import { SubState } from './state/Substate';
+import { SubSubState } from './state/SubSubstate';
 import { AppStateComponents } from './components/AppStateComponents';
 import { SubStateComponents } from './components/SubStateComponents';
+import { SubSubStateComponents } from './components/SubSubStateComponents';
 
 export const App: React.FC = () => {
   const initialState: AppState = {
@@ -11,14 +13,21 @@ export const App: React.FC = () => {
     subState: {
       subCount: 0,
       subQuery: '1234',
+      subSubState: {
+        subSubCount: 0,
+        subSubQuery: '',
+      },
     },
   };
   return (
-    <AppStateProvider>
+    <AppState.Provider>
       <AppStateComponents />
-      <SubStateProvider>
+      <SubState.Provider>
         <SubStateComponents />
-      </SubStateProvider>
-    </AppStateProvider>
+        <SubSubState.Provider>
+          <SubSubStateComponents />
+        </SubSubState.Provider>
+      </SubState.Provider>
+    </AppState.Provider>
   );
 };

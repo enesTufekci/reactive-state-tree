@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { SubState } from '../state/Substate';
+import { SubSubState } from '../state/SubSubstate';
 
 export const Root: React.FC = () => {
-  const [rootState, setRootState] = SubState.useRootState();
+  const [rootState, setRootState] = SubSubState.useRootState();
   const initialState = React.useRef(rootState!);
 
   const handleReset = () => {
@@ -19,7 +19,7 @@ export const Root: React.FC = () => {
 };
 
 export const Counter: React.FC = () => {
-  const [count, setCount] = SubState.useSelectState('subCount');
+  const [count, setCount] = SubSubState.useSelectState('subSubCount');
   const handleIncrement = () => {
     setCount(count => count + 1);
   };
@@ -35,7 +35,7 @@ export const Counter: React.FC = () => {
 };
 
 export const Input: React.FC = () => {
-  const [query, setQuery] = SubState.useSelectState('subQuery');
+  const [query, setQuery] = SubSubState.useSelectState('subSubQuery');
   const handleUpdateQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setQuery(value);
@@ -47,26 +47,10 @@ export const Input: React.FC = () => {
   );
 };
 
-const Condition: React.FC = () => {
-  SubState.useOnChange(
-    'subCount',
-    subCount => {
-      if (subCount) {
-        return subCount > 5;
-      }
-      return false;
-    },
-    () => alert('hahhaha')
-  );
-  console.log('render condition');
-  return null;
-};
-
-export const SubStateComponents = () => {
+export const SubSubStateComponents = () => {
   return (
     <>
       <Root />
-      <Condition></Condition>
       <Counter />
       <Input />
     </>

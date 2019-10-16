@@ -1,8 +1,12 @@
-import { createReactiveContext } from '../../../.';
+import { createState } from '../../../.';
 
 export interface SubState {
   subCount: number;
   subQuery: string;
+  subSubState: {
+    subSubQuery: string;
+    subSubCount: number;
+  };
 }
 
 export interface AppState {
@@ -11,23 +15,15 @@ export interface AppState {
   subState: SubState;
 }
 
-const [
-  AppStateContext,
-  AppStateProvider,
-  useAppStateRoot,
-  useAppStateSelect,
-] = createReactiveContext<AppState>({
+export const AppState = createState<AppState>({
   count: 0,
   query: '',
   subState: {
     subCount: 0,
     subQuery: '1234',
+    subSubState: {
+      subSubQuery: '',
+      subSubCount: 0,
+    },
   },
 });
-
-export {
-  AppStateContext,
-  AppStateProvider,
-  useAppStateRoot,
-  useAppStateSelect,
-};

@@ -1,37 +1,43 @@
 import * as React from 'react';
+
 import { StateTree, createStateTree } from './StateTree';
-import { createSelectStateHook, createRootStateHook } from './helpers';
+import { createStateManager, UseSelectState } from './helpers';
 
-export function createReactiveContext<T extends {}>(defaultState: T) {
-  const Context = React.createContext<StateTree<T>>(null as any);
-
-  const Provider: React.FC<{ initialState?: T }> = ({
-    children,
-    initialState = {},
-  }) => {
-    const value = React.useRef(
-      createStateTree({ ...defaultState, ...initialState })
-    );
-    return (
-      <Context.Provider value={value.current}>{children}</Context.Provider>
-    );
-  };
-
-  const useSelectState = createSelectStateHook(Context);
-  const useRootState = createRootStateHook(Context);
-
-  return [Context, Provider, useRootState, useSelectState] as [
-    typeof Context,
-    typeof Provider,
-    typeof useRootState,
-    typeof useSelectState
-  ];
+interface StateBranchI<T, K extends keyof T> {
+  Provider: React.FC<{ initialState?: T[K] }>;
+  useSelectState: UseSelectState<T[K]>;
+  useRootState: (
+    condition?: (state: T[K]) => boolean
+  ) => [T[K] | null, (n: T[K]) => void];
+  useOnChange: <L extends keyof T[K]>(
+    key: L,
+    condition: ((key: T[K][L] | null) => boolean) | undefined,
+    cb: VoidFunction
+  ) => void;
+  createBranch: <L extends keyof T[K]>(key: L) => StateBranchI<T[K], L>;
 }
 
-export function createSubTree<T, K extends keyof T>(
+interface StateTreeI<T> {
+  Provider: React.FC<{ initialState?: T }>;
+  useSelectState: UseSelectState<T>;
+  useRootState: (
+    condition?: (state: T) => boolean
+  ) => [T | null, (n: T) => void];
+  useOnChange: <K extends keyof T>(
+    key: K,
+    condition: ((key: T[K] | null) => boolean) | undefined,
+    cb: VoidFunction
+  ) => void;
+  createBranch: <K extends keyof T>(key: K) => StateBranchI<T, K>;
+}
+
+export const createBranch = <
+  T extends { [key: string]: any },
+  K extends keyof T
+>(
   Context: React.Context<StateTree<T>>,
   key: K
-) {
+): StateBranchI<T, K> => {
   const InnerContext = React.createContext<StateTree<T[K]>>(null as any);
 
   const Provider: React.FC<{ initialState?: T[K] }> = ({
@@ -68,13 +74,30 @@ export function createSubTree<T, K extends keyof T>(
     );
   };
 
-  const useSelectState = createSelectStateHook(InnerContext);
-  const useRootState = createRootStateHook(InnerContext);
+  return {
+    ...createStateManager(InnerContext, Provider),
+    createBranch: <L extends keyof T[K]>(key: L) =>
+      createBranch(InnerContext, key),
+  };
+};
 
-  return [InnerContext, Provider, useRootState, useSelectState] as [
-    typeof InnerContext,
-    typeof Provider,
-    typeof useRootState,
-    typeof useSelectState
-  ];
+export function createState<T extends {}>(defaultState: T): StateTreeI<T> {
+  const Context = React.createContext<StateTree<T>>(null as any);
+
+  const Provider: React.FC<{ initialState?: T }> = ({
+    children,
+    initialState = {},
+  }) => {
+    const value = React.useRef(
+      createStateTree({ ...defaultState, ...initialState })
+    );
+    return (
+      <Context.Provider value={value.current}>{children}</Context.Provider>
+    );
+  };
+
+  return {
+    ...createStateManager(Context, Provider),
+    createBranch: <K extends keyof T>(key: K) => createBranch(Context, key),
+  };
 }
