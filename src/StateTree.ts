@@ -41,7 +41,7 @@ export class StateTree<T> implements StateTreeI<T> {
   };
 
   public next: Next<T> = nextValue => {
-    if (this.value === nextValue) return;
+    if (JSON.stringify(this.value) === JSON.stringify(nextValue)) return;
 
     this.value = nextValue;
     Object.values(this.subscribers).forEach(subscriber => {

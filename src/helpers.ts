@@ -107,6 +107,14 @@ const createUseOnChange = <T>(Context: React.Context<StateTree<T>>) => {
   };
 };
 
+const createForceUpdate = <T>(Context: React.Context<StateTree<T>>) => {
+  return () => {
+    const subject = React.useContext(Context);
+
+    return subject.next;
+  };
+};
+
 export function createStateManager<T>(
   Context: React.Context<StateTree<T>>,
   Provider: StateProvider<T>
@@ -114,11 +122,13 @@ export function createStateManager<T>(
   const useSelectState = createSelectStateHook(Context);
   const useRootState = createRootStateHook(Context);
   const useOnChange = createUseOnChange(Context);
+  const update = createForceUpdate(Context);
 
   return {
     Provider,
     useSelectState,
     useRootState,
     useOnChange,
+    update,
   };
 }

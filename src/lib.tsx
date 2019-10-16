@@ -14,6 +14,7 @@ export interface StateBranchI<T, K extends keyof T> {
     condition: ((key: T[K][L] | null) => boolean) | undefined,
     cb: VoidFunction
   ) => void;
+  update: (nextState: T[K]) => void;
   createBranch: <L extends keyof T[K]>(key: L) => StateBranchI<T[K], L>;
 }
 
@@ -28,6 +29,7 @@ export interface StateTreeI<T> {
     condition: ((key: T[K] | null) => boolean) | undefined,
     cb: VoidFunction
   ) => void;
+  update: (nextState: T) => void;
   createBranch: <K extends keyof T>(key: K) => StateBranchI<T, K>;
 }
 
